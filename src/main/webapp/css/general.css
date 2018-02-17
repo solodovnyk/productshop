@@ -1,0 +1,10 @@
+.server_msg {
+	padding: 10px;
+}
+.admin-msg {
+	text-align:center;
+}
+.admin-msg p {
+	display:inline-block;
+	width:300px;
+}

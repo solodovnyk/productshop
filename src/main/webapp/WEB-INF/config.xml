@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration-list>
+	<configuration name="settings">
+		<configuration-components>
+			<configuration-component id="shopName">
+				<name>Название магазина</name>
+				<value>ProductShop</value>
+			</configuration-component>
+			<configuration-component id="adminEmail">
+				<name>Email администратора</name>
+				<value>adm@productshop.com</value>
+			</configuration-component>
+			<configuration-component id="adminPhone">
+				<name>Телефон администратора</name>
+				<value>(095) 400-20-40</value>
+			</configuration-component>
+			<configuration-component id="itemQuantity">
+				<name>Количество товаров на странице</name>
+				<value>6</value>
+			</configuration-component>
+			<configuration-component id="shopCurrency">
+				<name>Используемая валюта для магазина</name>
+				<value>грн</value>
+			</configuration-component>
+		</configuration-components>
+	</configuration>
+	<configuration name="site-settings">
+		<configuration-components>
+			<configuration-component id="defaultController">
+				<name>Контроллер по умолчанию</name>
+				<value>first</value>
+			</configuration-component>
+			<configuration-component id="defaultAction">
+				<name>Действие по умолчанию</name>
+				<value>index</value>
+			</configuration-component>
+			<configuration-component id="defaultViewLayout">
+				<name>Шаблон для представлений по умолчанию</name>
+				<value>main</value>
+			</configuration-component>
+			<configuration-component id="viewDirectoryPath">
+				<name>Путь к папке представлений</name>
+				<value>/WEB-INF/view</value>
+			</configuration-component>
+			<configuration-component id="layoutsDirectoryName">
+				<name>Название папки шаблонов</name>
+				<value>layouts</value>
+			</configuration-component>
+			<configuration-component id="errorController">
+				<name>Контроллер ошибок</name>
+				<value>error</value>
+			</configuration-component>
+		</configuration-components>
+	</configuration>
+	<configuration name="routes">
+		<configuration-components>
+			<configuration-component id="^/?catalog/([0-9]+)/?$">
+				<name>Маршрут для товаров</name>
+				<value>catalog/item/$1</value>
+			</configuration-component>
+			<configuration-component id="^/?catalog/(([A-Za-z0-9][A-Za-z0-9\-\_]*[A-Za-z0-9])|([A-Za-z0-9]+))/?$">
+				<name>Маршрут для категорий</name>
+				<value>catalog/category/$1</value>
+			</configuration-component>
+			<configuration-component id="^/?catalog/(([A-Za-z0-9][A-Za-z0-9\-\_]*[A-Za-z0-9])|([A-Za-z0-9]+))/(([A-Za-z0-9][A-Za-z0-9\-\_]*[A-Za-z0-9])|([A-Za-z0-9]+))/([1-3])/([0-9]+)/?$">
+				<name>Маршрут для подкатегорий</name>
+				<value>catalog/subcategory/$4/$7/$8</value>
+			</configuration-component>
+			<configuration-component id="^/?catalog/([0-9]+)/?$">
+				<name>Маршрут для товаров</name>
+				<value>catalog/item/$1</value>
+			</configuration-component>
+			<configuration-component id="^/?account/?$">
+				<name>Маршрут для личного кабинета</name>
+				<value>user</value>
+			</configuration-component>
+			<configuration-component id="^/?account/([A-Za-z]+)/?$">
+				<name>Маршрут для страниц регистрации и авторизации</name>
+				<value>user/$1</value>
+			</configuration-component>
+		</configuration-components>
+	</configuration>
+</configuration-list>
