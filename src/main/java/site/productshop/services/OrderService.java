@@ -8,7 +8,7 @@ import site.productshop.dao.ProductpositionDao;
 import site.productshop.entities.Order;
 import site.productshop.entities.ProductPosition;
 
-public class OrderService extends BaseService {
+public class OrderService extends AbstractService {
 
 	public long createOrder(Order order, CookieManager cm) throws ServiceException {
 		

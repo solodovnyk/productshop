@@ -6,7 +6,7 @@ import site.productshop.dao.DaoException;
 import site.productshop.dao.MessageDao;
 import site.productshop.entities.Message;
 
-public class MessageService extends BaseService {
+public class MessageService extends AbstractService {
 	
 	public long createNewMessage(Message message) throws ServiceException {
 		

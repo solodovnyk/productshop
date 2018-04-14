@@ -6,8 +6,8 @@ import site.productshop.util.exceptions.EntityNotFoundException;
 import java.util.List;
 
 public interface Dao<EntityType extends Entity> {
-    EntityType findById(Long id) throws EntityNotFoundException;
+    EntityType findById(Long id);
     List<EntityType> findAll();
-    EntityType save(EntityType entity);
-    void delete(EntityType entity) throws EntityNotFoundException;
+    void save(EntityType entity);
+    void delete(EntityType entity);
 }

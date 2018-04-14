@@ -7,7 +7,7 @@ import site.productshop.security.AuthenticationManager;
 import site.productshop.dao.DaoException;
 import site.productshop.dao.UserDao;
 
-public class UserService extends BaseService {
+public class UserService extends AbstractService {
 
 	public int getRoleByUserID(int userID) throws ServiceException {
 		
