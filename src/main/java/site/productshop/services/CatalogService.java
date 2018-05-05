@@ -11,7 +11,7 @@ import site.productshop.dao.DaoException;
 import site.productshop.entities.Category;
 import site.productshop.entities.Item;
 
-public class CatalogService extends BaseService {
+public class CatalogService extends AbstractService {
 
 	public Category getCategoryByID(int categoryID) throws ServiceException {
 		

@@ -6,7 +6,7 @@ import site.productshop.dao.ProductpositionDao;
 import site.productshop.entities.Order;
 import site.productshop.entities.ProductPosition;
 
-public class ProductPositionService extends BaseService {
+public class ProductPositionService extends AbstractService {
 
 	public ArrayList<ProductPosition> getProductPositionsByOrder(Order order) throws ServiceException {
 		
