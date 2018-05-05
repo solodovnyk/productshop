@@ -52,6 +52,7 @@
 			</configuration-component>
 		</configuration-components>
 	</configuration>
+
 	<configuration name="routes">
 		<configuration-components>
 			<configuration-component id="^/?catalog/([0-9]+)/?$">
