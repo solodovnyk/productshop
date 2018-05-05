@@ -8,7 +8,7 @@ import site.productshop.entities.User;
 import site.productshop.services.ServiceException;
 import site.productshop.services.UserService;
 
-public class OrderDao extends BaseDao {
+public class OrderDao extends AbstractDao {
 
 	public long addOrder(Order order) throws DaoException {
 		int userID = order.getUser().getId();

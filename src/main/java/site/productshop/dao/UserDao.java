@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import site.productshop.entities.User;
 
-public class UserDao extends BaseDao {
+public class UserDao extends AbstractDao {
 	
 	public int getRoleByID(int userID) throws DaoException {
 		

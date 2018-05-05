@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import site.productshop.entities.Category;
 import site.productshop.entities.Item;
 
-public class CatalogDao extends BaseDao {
+public class CatalogDao extends AbstractDao {
 
 	public Category getCategoryByID(int id) throws DaoException {
 		String sql = 

@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import site.productshop.entities.Message;
 
-public class MessageDao extends BaseDao {
+public class MessageDao extends AbstractDao {
 	
 	public long addMessage(Message message) throws DaoException {
 		String name = message.getSenderName();

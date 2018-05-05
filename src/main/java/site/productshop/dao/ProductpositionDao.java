@@ -9,7 +9,7 @@ import site.productshop.entities.ProductPosition;
 import site.productshop.services.CatalogService;
 import site.productshop.services.ServiceException;
 
-public class ProductpositionDao extends BaseDao {
+public class ProductpositionDao extends AbstractDao {
 	public void addPositionsByOrderID(long orderID, ArrayList<ProductPosition> productPositions) throws DaoException {
 		String sql = "INSERT INTO `product_position`(order_id,item_id,quantity,price) VALUES (?,?,?,?)";
 		try (Connection connection = getJDBCConnection();
