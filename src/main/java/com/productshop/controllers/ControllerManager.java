@@ -1,9 +1,12 @@
 package com.productshop.controllers;
 
+import com.productshop.core.AppInfo;
+import com.productshop.core.Context;
+import com.productshop.core.ErrorManager;
+import com.productshop.router.Route;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import com.productshop.core.*;
-import com.productshop.router.Route;
 
 public class ControllerManager {
 
@@ -80,7 +83,7 @@ public class ControllerManager {
 			return null;
 		}
 
-		String viewLayoutName = prepareViewLayoutName(context, actionMethod);
+		String viewLayoutName = prepareViewLayoutName(context, controllerObject, actionMethod);
 		String title = prepareTitle(context, actionMethod);
 
 		HashMap<String, Object> preparedAppInfo = new HashMap<>();
@@ -234,12 +237,14 @@ public class ControllerManager {
 		return defaultActionName;
 	}
 
-	private String prepareViewLayoutName(Context context, Method actionMethod) throws ControllerException {
+	private String prepareViewLayoutName(Context context, Controller controllerObject, Method actionMethod) throws ControllerException {
 		String viewLayoutName;
 		ActionConfig actionConfig = actionMethod.getAnnotation(ActionConfig.class);
-
+		ControllerConfig controllerConfig = controllerObject.getClass().getAnnotation(ControllerConfig.class);
 		if(actionConfig != null && !actionConfig.defaultViewLayoutName().isEmpty()) {
 			viewLayoutName = actionConfig.defaultViewLayoutName();
+		} else if (controllerConfig != null && !controllerConfig.defaultViewLayoutName().isEmpty()) {
+			viewLayoutName = controllerConfig.defaultViewLayoutName();
 		} else {
 			try {
 				viewLayoutName = context.getAppInfo().getDefaultViewLayoutName();

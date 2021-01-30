@@ -1,18 +1,21 @@
 package com.productshop.controllers;
 
+import com.productshop.core.Messenger;
+import com.productshop.core.RedirectManager;
+import com.productshop.models.*;
+import com.productshop.security.AuthenticationManager;
+import com.productshop.security.Encryption;
+import com.productshop.security.SecurityException;
+import com.productshop.services.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
-import javax.servlet.http.Part;
-import com.productshop.core.*;
-import com.productshop.models.*;
-import com.productshop.security.*;
-import com.productshop.security.SecurityException;
-import com.productshop.services.*;
 
-@ControllerConfig(defaultActionName = "admin-panel")
+@ControllerConfig(defaultViewLayoutName = "admin-panel")
 public class AdminController extends BaseController {
 
 	@ActionConfig(defaultViewLayoutName = "admin-index")

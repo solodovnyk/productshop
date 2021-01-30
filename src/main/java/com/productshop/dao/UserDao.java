@@ -1,8 +1,9 @@
 package com.productshop.dao;
 
+import com.productshop.models.User;
+
 import java.sql.*;
 import java.util.ArrayList;
-import com.productshop.models.User;
 
 public class UserDao extends BaseDao {
 	
@@ -29,7 +30,7 @@ public class UserDao extends BaseDao {
 		String email = user.getEmail();
 		String phone = user.getPhone();
 		String password = user.getPassword();
-		String sql = "INSERT INTO `users` (name, surname, email, phone, password) VALUES (?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO `users` (name, surname, email, phone, password, role_id) VALUES (?, ?, ?, ?, ?, 1)";
 		long resultID;
 		try (Connection connection = getJDBCConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {

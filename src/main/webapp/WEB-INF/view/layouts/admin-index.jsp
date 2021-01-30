@@ -16,7 +16,7 @@
    </head>
    <body class="admin">
     <div class="container">
-      <jsp:include page="${viewPath}"/>
+      <jsp:include page="${appInfo.viewPath}"/>
     </div>
   </body>
 </html>
