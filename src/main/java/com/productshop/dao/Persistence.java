@@ -2,8 +2,6 @@ package com.productshop.dao;
 
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;

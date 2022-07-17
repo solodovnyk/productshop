@@ -8,7 +8,6 @@ CREATE TABLE `categories` (
     is_deleted TINYINT DEFAULT 0
 );
 
-
 CREATE TABLE `items` (
      id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
      name VARCHAR(255) NOT NULL,
@@ -20,4 +19,13 @@ CREATE TABLE `items` (
      creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
      is_deleted TINYINT DEFAULT 0,
      FOREIGN KEY(category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE `messages` (
+     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+     sender_name VARCHAR(255) NOT NULL,
+     sender_email VARCHAR(255) NOT NULL,
+     message_text TEXT,
+     creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     is_deleted TINYINT DEFAULT 0
 );

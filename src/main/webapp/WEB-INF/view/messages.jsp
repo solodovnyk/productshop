@@ -15,7 +15,7 @@
 	           <c:set var="email" value="${message.senderEmail}"/>
 			   <c:set var="text" value="${message.text}"/>
 		    </c:if>
-			<form class="account-form" action="<c:url value="/first/messages" />" method="post">
+			<form class="account-form" action="<c:url value="/messages" />" method="post">
 	          <div class="form-section">
 	            <input type="text" value="${name}" name="name" placeholder="Имя">
 	          </div>

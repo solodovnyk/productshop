@@ -21,11 +21,11 @@
         <div class="top-header-left">
           <div class="ask">
             <span></span>
-            <a href="<c:url value="/first/messages" />">Задать вопрос</a>
+            <a href="<c:url value="/messages" />">Задать вопрос</a>
           </div>
           <div class="delivery">
             <span></span>
-            <a href="<c:url value="/first/delivery" />">Доставка</a>
+            <a href="<c:url value="/delivery" />">Доставка</a>
           </div>
         </div>
         <div class="top-header-right">
