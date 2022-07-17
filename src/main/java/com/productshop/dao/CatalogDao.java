@@ -82,7 +82,7 @@ public class CatalogDao extends BaseDao {
 	
 	public ArrayList<Item> getItemsBySubcategoryID(int categoryID, int sortMode, int limit, int offset)
 			throws DaoException {
-		String sortField = "addition_date DESC";
+		String sortField = "creating_date DESC";
 		if(sortMode == 2) {
 			sortField = "price";
 		} else if(sortMode == 3) {
@@ -90,7 +90,7 @@ public class CatalogDao extends BaseDao {
 		}
 		String sql = 
 				"SELECT `id`, `name`, `category_id`, `description`, `photo`, `price`, `sale`,"
-				+ "`addition_date` FROM `items` WHERE category_id=? AND `is_deleted`=0 ORDER BY "
+				+ "`creating_date` FROM `items` WHERE category_id=? AND `is_deleted`=0 ORDER BY "
 						+ sortField + " LIMIT " + limit + " OFFSET " + offset;
 		ArrayList<Item> items = new ArrayList<>();
 		try(Connection connection = getJDBCConnection();
@@ -109,7 +109,7 @@ public class CatalogDao extends BaseDao {
 				item.setCategory(category);
 				item.setPhoto(resultSet.getString("photo"));
 				item.setSale(new BigDecimal(resultSet.getInt("sale")));
-				item.setAdditionDate(resultSet.getDate("addition_date"));
+				item.setAdditionDate(resultSet.getDate("creating_date"));
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -120,7 +120,7 @@ public class CatalogDao extends BaseDao {
 	
 	public ArrayList<Item> getItemsByKeyword(String keyword, int sortMode, int limit, int offset) 
 			throws DaoException {
-		String sortField = "addition_date DESC";
+		String sortField = "creating_date DESC";
 		if(sortMode == 2) {
 			sortField = "price";
 		} else if(sortMode == 3) {
@@ -128,7 +128,7 @@ public class CatalogDao extends BaseDao {
 		}
 		String sql = 
 				"SELECT `id`, `name`, `category_id`, `description`, `photo`, `price`, `sale`,"
-				+ "`addition_date` FROM `items` WHERE `is_deleted`=0 AND `name` LIKE '%"+keyword+"%' ORDER BY "
+				+ "`creating_date` FROM `items` WHERE `is_deleted`=0 AND `name` LIKE '%"+keyword+"%' ORDER BY "
 						+ sortField + " LIMIT " + limit + " OFFSET " + offset;
 		ArrayList<Item> items = new ArrayList<>();
 		try(Connection connection = getJDBCConnection();
@@ -146,7 +146,7 @@ public class CatalogDao extends BaseDao {
 				item.setCategory(category);
 				item.setPhoto(resultSet.getString("photo"));
 				item.setSale(new BigDecimal(resultSet.getInt("sale")));
-				item.setAdditionDate(resultSet.getDate("addition_date"));
+				item.setAdditionDate(resultSet.getDate("creating_date"));
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -179,7 +179,7 @@ public class CatalogDao extends BaseDao {
 	public ArrayList<Item> getAllItems() throws DaoException {
 		String sql = 
 		"SELECT `id`, `name`, `category_id`, `description`, `photo`, `price`, `sale`,"
-		+ "`addition_date` FROM `items` WHERE `is_deleted` = 0 ORDER BY `addition_date` DESC";
+		+ "`creating_date` FROM `items` WHERE `is_deleted` = 0 ORDER BY `creating_date` DESC";
 		ArrayList<Item> items = new ArrayList<>();
 		try(Connection connection = getJDBCConnection();
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -196,7 +196,7 @@ public class CatalogDao extends BaseDao {
 				item.setCategory(category);
 				item.setPhoto(resultSet.getString("photo"));
 				item.setSale(new BigDecimal(resultSet.getInt("sale")));
-				item.setAdditionDate(resultSet.getDate("addition_date"));
+				item.setAdditionDate(resultSet.getDate("creating_date"));
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -208,7 +208,7 @@ public class CatalogDao extends BaseDao {
 	public ArrayList<Item> getLastItems(int quantity) throws DaoException {
 		String sql = 
 		"SELECT `id`, `name`, `category_id`, `description`, `photo`, `price`, `sale`,"
-		+ "`addition_date` FROM `items` WHERE `is_deleted` = 0 ORDER BY `addition_date` DESC LIMIT ?";
+		+ "`creating_date` FROM `items` WHERE `is_deleted` = 0 ORDER BY `creating_date` DESC LIMIT ?";
 		ArrayList<Item> items = new ArrayList<>();
 		try(Connection connection = getJDBCConnection();
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -226,7 +226,7 @@ public class CatalogDao extends BaseDao {
 				item.setCategory(category);
 				item.setPhoto(resultSet.getString("photo"));
 				item.setSale(new BigDecimal(resultSet.getInt("sale")));
-				item.setAdditionDate(resultSet.getDate("addition_date"));
+				item.setAdditionDate(resultSet.getDate("creating_date"));
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -238,7 +238,7 @@ public class CatalogDao extends BaseDao {
 	public ArrayList<Item> getLastDiscountItems(int quantity) throws DaoException {
 		String sql = 
 		"SELECT `id`, `name`, `category_id`, `description`, `photo`, `price`, `sale`,"
-		+ "`addition_date` FROM `items` WHERE `is_deleted` = 0 AND sale>0 ORDER BY `addition_date` DESC LIMIT ?";
+		+ "`creating_date` FROM `items` WHERE `is_deleted` = 0 AND sale>0 ORDER BY `creating_date` DESC LIMIT ?";
 		ArrayList<Item> items = new ArrayList<>();
 		try(Connection connection = getJDBCConnection();
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -256,7 +256,7 @@ public class CatalogDao extends BaseDao {
 				item.setCategory(category);
 				item.setPhoto(resultSet.getString("photo"));
 				item.setSale(new BigDecimal(resultSet.getInt("sale")));
-				item.setAdditionDate(resultSet.getDate("addition_date"));
+				item.setAdditionDate(resultSet.getDate("creating_date"));
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -386,7 +386,7 @@ public class CatalogDao extends BaseDao {
 	public Item getItemByID(int itemID) throws DaoException {
 		String sql = 
 		"SELECT `id`, `name`, `category_id`, `description`, `photo`, `price`, `sale`,"
-		+ "`addition_date` FROM `items` WHERE `id` = ? AND `is_deleted` = 0";
+		+ "`creating_date` FROM `items` WHERE `id` = ? AND `is_deleted` = 0";
 		Item item = null;
 		try(Connection connection = getJDBCConnection();
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -404,7 +404,7 @@ public class CatalogDao extends BaseDao {
 				item.setCategory(category);
 				item.setPhoto(resultSet.getString("photo"));
 				item.setSale(new BigDecimal(resultSet.getInt("sale")));
-				item.setAdditionDate(resultSet.getDate("addition_date"));
+				item.setAdditionDate(resultSet.getDate("creating_date"));
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e.getMessage(), e);

@@ -84,7 +84,7 @@
         </nav>
       </aside>
       <div class="content">
-      	<jsp:include page="${appInfo.viewPath}"/>
+      	<jsp:include page="../${page}.jsp"/>
       </div>
       <div class="clearfix"></div>
     </div>

@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 
 public abstract class BaseController implements Controller {
 
+	protected final String MAIN_LAYOUT_PATH = "layouts/main";
+
 	private ThreadLocal<Context> context = new ThreadLocal<>();
 
 	public void invokeAction(Context context, Method action, Object[] params) throws ControllerException {

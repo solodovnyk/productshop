@@ -1,5 +1,7 @@
 package com.productshop.dao;
 
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -38,12 +40,13 @@ public class Persistence {
         return entityManagerFactoryPool.get(unitName).createEntityManager();
     }
 
-    private void createConnectionPool() throws DaoException {
-        try {
-            connectionPool = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/product_shop");
-        } catch (NamingException e) {
-            throw new DaoException(e.getMessage(), e);
-        }
+    private void createConnectionPool() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/product_shop");
+        dataSource.setUsername("root");
+        dataSource.setPassword("");
+        connectionPool = dataSource;
     }
 
     private void createEntityManagerFactory(String unitName) {

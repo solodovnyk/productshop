@@ -1,26 +1,35 @@
 package com.productshop.controllers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.productshop.core.*;
 import com.productshop.models.*;
 import com.productshop.services.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
+@Controller("/first")
 public class FirstController extends BaseController {
 
-	public void actionIndex() throws ControllerException {
+	@GetMapping("/")
+	public String actionIndex(Model model) throws ControllerException {
 		CatalogService service = new CatalogService();
-		ArrayList<Item> lastItems = null;
-		ArrayList<Item> discountItems = null;
-		
+		ArrayList<Item> lastItems;
+		ArrayList<Item> discountItems;
 		try {
 			lastItems = service.getLastItems(6);
 			discountItems = service.getLastDiscountItems(6);
 		} catch (ServiceException e) {
 			throw new ControllerException(e.getMessage(), e);
 		}
-
-		getContext().setAttribute("lastItems", lastItems);
-		getContext().setAttribute("discountItems", discountItems);
+		model.addAttribute("lastItems", lastItems);
+		model.addAttribute("discountItems", discountItems);
+		model.addAttribute("page", "first/index");
+		return MAIN_LAYOUT_PATH;
 	}
 	
 	public void actionMessages() throws ControllerException {
