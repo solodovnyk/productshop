@@ -2,7 +2,6 @@ package com.productshop.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.servlet.http.HttpServletRequest;
 import com.productshop.core.Messenger;
 import com.productshop.core.RedirectManager;
 import com.productshop.models.Order;
@@ -13,7 +12,13 @@ import com.productshop.security.SecurityException;
 import com.productshop.services.OrderService;
 import com.productshop.services.ServiceException;
 import com.productshop.services.UserService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+@Controller
+@RequestMapping("/account")
 public class UserController extends BaseController {
 	
 	public void actionIndex() throws ControllerException {
@@ -47,7 +52,13 @@ public class UserController extends BaseController {
 			throw new ControllerException(e.getMessage(), e);
 		}
 	}
-	
+
+	@GetMapping("/login")
+	public String renderLoginPage(Model model) {
+		model.addAttribute("page", "user/login");
+		return MAIN_LAYOUT_PATH;
+	}
+
 	public void actionLogin() throws ControllerException {
 		AuthenticationManager authManager = getContext().getAuthenticationManager();
 		Messenger messages = getContext().getMessenger();
@@ -102,6 +113,12 @@ public class UserController extends BaseController {
 				messages.addErrorMessage("Ошибка. Неверный логин или пароль.");
 			}
 		}
+	}
+
+	@GetMapping("/registration")
+	public String renderRegistrationPage(Model model) {
+		model.addAttribute("page", "user/registration");
+		return MAIN_LAYOUT_PATH;
 	}
 	
 	public void actionRegistration() throws ControllerException {
