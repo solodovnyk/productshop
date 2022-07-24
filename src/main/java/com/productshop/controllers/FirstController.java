@@ -44,7 +44,7 @@ public class FirstController extends BaseController {
 
 	@PostMapping("/messages")
 	public String processMessage(Model model,
-								 @Autowired Messenger messenger,
+								 Messenger messenger,
 								 @RequestParam String name,
 								 @RequestParam String email,
 								 @RequestParam String question) {

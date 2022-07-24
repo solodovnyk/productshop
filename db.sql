@@ -29,3 +29,15 @@ CREATE TABLE `messages` (
      creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
      is_deleted TINYINT DEFAULT 0
 );
+
+CREATE TABLE `users` (
+    id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    surname VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(255),
+    password VARCHAR(255) NOT NULL,
+    role_id TINYINT NOT NULL,
+    creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted TINYINT DEFAULT 0
+);

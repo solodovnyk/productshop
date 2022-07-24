@@ -1,34 +1,42 @@
 package com.productshop.security;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.productshop.models.User;
 import com.productshop.services.ServiceException;
 import com.productshop.services.UserService;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import static org.springframework.web.context.WebApplicationContext.SCOPE_SESSION;
+
+@Component
+@Scope(SCOPE_SESSION)
 public class AuthenticationManager {
-
-	public static final int USER = 1;
-	public static final int ADMIN = 2;
 	
 	private HttpSession session;
 	private Authentication authentication;
 	
-	public AuthenticationManager(HttpServletRequest request) {
-		this.session = request.getSession();
+	public AuthenticationManager() {
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attributes != null) {
+			this.session = attributes.getRequest().getSession();
+		} else {
+			throw new IllegalStateException("No session");
+		}
 		this.authentication = getAuthentication();
 	}
 	
-	private Authentication setAuthentication(User user) {
+	private Authentication initAuthentication(User user) {
 		Authentication authentication = new Authentication(user);
 		session.setAttribute("authentication", authentication);
 		return authentication;
 	}
 
 	private Authentication getAuthentication() {
-		Authentication authentication = (Authentication) session.getAttribute("authentication");
-		return authentication;
+		return (Authentication) session.getAttribute("authentication");
 	}
 	
 	public void destroyAuthentication() {
@@ -36,7 +44,7 @@ public class AuthenticationManager {
 	}
 	
 	public boolean isAuthenticated() {
-		return authentication != null ? true : false;
+		return authentication != null;
 	}
 	
 	public int getUserRoleID() throws SecurityException {
@@ -74,7 +82,7 @@ public class AuthenticationManager {
 	}
 	
 	public void createNewAuthentication(User user) {
-		this.authentication = setAuthentication(user);
+		this.authentication = initAuthentication(user);
 	}
 	
 	public int getUserID() {

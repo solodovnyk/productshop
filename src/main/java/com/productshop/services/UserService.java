@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import com.productshop.dao.*;
 import com.productshop.models.User;
 import com.productshop.security.AuthenticationManager;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class UserService extends BaseService {
 
 	public int getRoleByUserID(int userID) throws ServiceException {
@@ -22,7 +24,7 @@ public class UserService extends BaseService {
 		return userRole;
 	}
 	
-	public User getUserByID(int userID) throws ServiceException {
+	public User getUserByID(long userID) throws ServiceException {
 		
 		User user = null;
 		
@@ -47,6 +49,8 @@ public class UserService extends BaseService {
 			if(!dao.userExists(user)) {
 				userID = dao.addUser(user);
 				user = dao.getUser(user.getEmail());
+			} else {
+				log.info("User with such ID already exists");
 			}
 		} catch (DaoException e) {
 			throw new ServiceException(e.getMessage(), e);

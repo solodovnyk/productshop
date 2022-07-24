@@ -102,7 +102,7 @@ public class UserDao extends BaseDao {
 	
 	public User getUser(String email) throws DaoException {
 		String sql = 
-				"SELECT `id`, `name`, `surname`, `email`, `phone`, `password`, `role_id`, `registration_date` "
+				"SELECT `id`, `name`, `surname`, `email`, `phone`, `password`, `role_id`, `creating_date` "
 				+ "FROM `users` WHERE email=? AND `is_deleted`=0";
 		User user = null;
 		try (Connection connection = getJDBCConnection();
@@ -119,7 +119,7 @@ public class UserDao extends BaseDao {
 				);
 				user.setId(resultSet.getInt("id"));
 				user.setRoleID(resultSet.getInt("role_id"));
-				user.setRegistrationDate(resultSet.getDate("registration_date"));
+				user.setRegistrationDate(resultSet.getDate("creating_date"));
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e.getMessage(), e);
@@ -127,14 +127,14 @@ public class UserDao extends BaseDao {
 		return user;
 	}
 	
-	public User getUserByID(int userID) throws DaoException {
+	public User getUserByID(long userID) throws DaoException {
 		String sql = 
-				"SELECT `id`, `name`, `surname`, `email`, `phone`, `password`, `role_id`, `registration_date` "
+				"SELECT `id`, `name`, `surname`, `email`, `phone`, `password`, `role_id`, `creating_date` "
 				+ "FROM `users` WHERE id=? AND `is_deleted`=0";
 		User user = null;
 		try (Connection connection = getJDBCConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-			statement.setInt(1, userID);
+			statement.setLong(1, userID);
 			ResultSet resultSet = statement.executeQuery();
 			if(resultSet.next()) {
 				user = new User(
@@ -146,7 +146,7 @@ public class UserDao extends BaseDao {
 				);
 				user.setId(resultSet.getInt("id"));
 				user.setRoleID(resultSet.getInt("role_id"));
-				user.setRegistrationDate(resultSet.getDate("registration_date"));
+				user.setRegistrationDate(resultSet.getDate("creating_date"));
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e.getMessage(), e);
@@ -155,7 +155,7 @@ public class UserDao extends BaseDao {
 	}
 	
 	public ArrayList<User> getAllUsers() throws DaoException {
-		String sql = "SELECT id,name,surname,email,phone,password,role_id,registration_date FROM users "
+		String sql = "SELECT id,name,surname,email,phone,password,role_id,creating_date FROM users "
 				+ "WHERE is_deleted = 0";
 		ArrayList<User> users = new ArrayList<>();
 		try (Connection connection = getJDBCConnection();
@@ -171,7 +171,7 @@ public class UserDao extends BaseDao {
 				);
 				user.setId(resultSet.getInt("id"));
 				user.setRoleID(resultSet.getInt("role_id"));
-				user.setRegistrationDate(resultSet.getDate("registration_date"));
+				user.setRegistrationDate(resultSet.getDate("creating_date"));
 				users.add(user);
 			}
 		} catch (SQLException e) {

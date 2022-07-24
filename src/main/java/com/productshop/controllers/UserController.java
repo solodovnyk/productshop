@@ -15,7 +15,9 @@ import com.productshop.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/account")
@@ -116,79 +118,72 @@ public class UserController extends BaseController {
 	}
 
 	@GetMapping("/registration")
-	public String renderRegistrationPage(Model model) {
+	public String renderRegistrationPage(Model model, AuthenticationManager authManager) throws ServiceException {
+		if(authManager.isAuthenticated()) {
+			User user = new UserService().getUserByID(authManager.getUserID());
+			model.addAttribute("user", user);
+			model.addAttribute("page", "user/account");
+			return MAIN_LAYOUT_PATH;
+		}
 		model.addAttribute("page", "user/registration");
 		return MAIN_LAYOUT_PATH;
 	}
-	
-	public void actionRegistration() throws ControllerException {
-		AuthenticationManager authManager = getContext().getAuthenticationManager();
-		Messenger messages = getContext().getMessenger();
-		
+
+	@PostMapping("/registration")
+	public String processRegistrationRequest(Model model,
+								   AuthenticationManager authManager,
+								   Messenger messenger,
+								   @RequestParam(required = false) String name,
+								   @RequestParam(required = false) String surname,
+								   @RequestParam(required = false) String email,
+								   @RequestParam(required = false) String phone,
+								   @RequestParam(required = false) String password,
+								   @RequestParam(required = false, value = "confirm-password") String confirmedPassword
+								   ) throws ControllerException, ServiceException {
+		model.addAttribute("messages", messenger);
 		if(authManager.isAuthenticated()) {
-			String url = getContext().getRequest().getContextPath() + "/account";
-			RedirectManager rm = getContext().getRedirectManager();
-			
-			try {
-				rm.goTo(url);
-				return;
-			} catch (IOException e) {
-				throw new ControllerException(e.getMessage(), e);
-			}
+			User user = new UserService().getUserByID(authManager.getUserID());
+			model.addAttribute("user", user);
+			model.addAttribute("page", "user/account");
+			return MAIN_LAYOUT_PATH;
 		}
-		
-		if(getContext().isMethodPOST()) {
-			String name = getContext().getRequestParameter("name");
-			String surname = getContext().getRequestParameter("surname");
-			String email = getContext().getRequestParameter("email");
-			String phone = getContext().getRequestParameter("phone");
-			String password = getContext().getRequestParameter("password");
-			String  confirmedPassword = getContext().getRequestParameter("confirm-password");
-			
-			User user = new User(name, surname, email, phone, password);
-			
-			if(!password.equals(confirmedPassword)) {
-				messages.addErrorMessage("Ошибка. Пароли не совпадают.");
-			}
-			
-			if(name.isEmpty() || surname.isEmpty() || email.isEmpty() || phone.isEmpty() ||
-			   password.isEmpty() || confirmedPassword.isEmpty()) {
-				
-				messages.addErrorMessage("Ошибка. Все поля обязательны для заполнения.");
-			}
-			
-			if(messages.getErrorMessages().size() > 0) {
-				getContext().setAttribute("user", user);
-				return;
-			}
-			
-			long result = 0;
-			
-			try {
-				String hashPassword = Encryption.hash(password);
-				user.setPassword(hashPassword);
-				
-				UserService service = new UserService();
-				
-				result = service.createNewUser(user, authManager);
-			} catch (ServiceException | SecurityException e) {
-				throw new ControllerException(e.getMessage(), e);
-			}
-			
-			if(result > 0) {
-				String url = getContext().getRequest().getContextPath() + "/account";
-				RedirectManager rm = getContext().getRedirectManager();
-				try {
-					rm.goTo(url);
-					return;
-				} catch (IOException e) {
-					throw new ControllerException(e.getMessage(), e);
-				}
-			} else {
-				messages.addErrorMessage("Ошибка. Регистрация не была завершена.");
-			}
-			
-			getContext().setAttribute("user", user);
+		User user = new User(name, surname, email, phone, password);
+		model.addAttribute("user", user);
+
+		if(name.isBlank() || surname.isBlank() || email.isBlank() || phone.isBlank() ||
+				password.isBlank() || confirmedPassword.isBlank()) {
+			messenger.addErrorMessage("Ошибка. Все поля обязательны для заполнения.");
+			model.addAttribute("page", "user/registration");
+			return MAIN_LAYOUT_PATH;
+		}
+
+		if(!password.equals(confirmedPassword)) {
+			messenger.addErrorMessage("Ошибка. Пароли не совпадают.");
+			model.addAttribute("page", "user/registration");
+			return MAIN_LAYOUT_PATH;
+		}
+
+		long result = 0;
+
+		try {
+			String hashPassword = Encryption.hash(password);
+			user.setPassword(hashPassword);
+
+			UserService service = new UserService();
+
+			result = service.createNewUser(user, authManager);
+		} catch (ServiceException | SecurityException e) {
+			throw new ControllerException(e.getMessage(), e);
+		}
+
+		if(result > 0) {
+			model.addAttribute("user", new UserService().getUserByID(result));
+			model.addAttribute("page", "user/account");
+			return MAIN_LAYOUT_PATH;
+		} else {
+			messenger.addErrorMessage("Ошибка. Регистрация не была завершена.");
+			model.addAttribute("page", "user/registration");
+			return MAIN_LAYOUT_PATH;
 		}
 	}
 	

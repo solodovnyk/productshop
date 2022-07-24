@@ -25,7 +25,7 @@ public class Context {
         this.cookieManager = CookieManager.get(this);
         this.errorManager = new ErrorManager();
         this.messenger = new Messenger();
-        this.authManager = new AuthenticationManager(request);
+        //this.authManager = new AuthenticationManager(request);
         this.config = Configurations.createConfigurations(configPath);
         this.appInfo = new AppInfo(this);
         this.request.setCharacterEncoding("UTF-8");
