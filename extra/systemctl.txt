@@ -1,0 +1,16 @@
+[Unit]
+Description= ProductShop
+After=syslog.target
+After=network.target[Service]
+User= ubuntu
+Type=simple
+
+[Service]
+ExecStart=/usr/bin/java -jar /home/ubuntu/productshop/ps.jar
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier= ProductShop
+
+[Install]
+WantedBy=multi-user.target

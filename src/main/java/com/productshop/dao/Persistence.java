@@ -40,10 +40,10 @@ public class Persistence {
 
     private void createConnectionPool() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/product_shop");
         dataSource.setUsername("root");
-        dataSource.setPassword("");
+        dataSource.setPassword("55555");
         connectionPool = dataSource;
     }
 
