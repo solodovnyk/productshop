@@ -43,3 +43,23 @@ CREATE TABLE `users` (
     creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_deleted TINYINT DEFAULT 0
 );
+
+CREATE TABLE `orders` (
+     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+     user_id BIGINT NOT NULL,
+     order_status VARCHAR(255) NOT NULL,
+     creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     is_deleted TINYINT DEFAULT 0
+);
+
+CREATE TABLE `product_position` (
+    id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    order_id BIGINT NOT NULL,
+    item_id BIGINT NOT NULL,
+    quantity INT NOT NULL,
+    price INT NOT NULL,
+    creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted TINYINT DEFAULT 0,
+    FOREIGN KEY(order_id) REFERENCES orders(id),
+    FOREIGN KEY(item_id) REFERENCES items(id)
+);

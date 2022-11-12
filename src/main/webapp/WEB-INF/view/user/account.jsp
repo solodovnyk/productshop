@@ -80,14 +80,14 @@
                 <c:forEach var="order" items="${orders}">
                 <tr data-toggle="modal" data-target="#order${order.id}">
                   <td>${order.id}</td>
-                  <td>${order.orderDate}</td>
-                  <c:if test="${order.orderStatusID == 1}">
-			        <td data-status="1">оформлен</td>
+                  <td>${order.creatingDate}</td>
+                  <c:if test="${order.orderStatus == 'NEW'}">
+			        <td data-status="1">новый</td>
 			      </c:if>
-			      <c:if test="${order.orderStatusID == 2}">
+			      <c:if test="${order.orderStatus == 'IN_PROCESS'}">
 			        <td data-status="2">в обработке</td>
 			      </c:if>
-                  <c:if test="${order.orderStatusID == 3}">
+                  <c:if test="${order.orderStatus == 'DONE'}">
 			        <td data-status="3">выполнен</td>
 			      </c:if>
                   <td>${order.totalPrice}</td>
@@ -105,7 +105,7 @@
 		      <div class="modal-content">
 		        <div class="modal-header">
 		          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		          <h4 class="modal-title" id="order">Заказ №${order.id} от ${order.orderDate}</h4>
+		          <h4 class="modal-title" id="order">Заказ №${order.id} от ${order.creatingDate}</h4>
 		        </div>
 		        <div class="modal-body">
 		          <table class="table table-striped my-orders">

@@ -2,6 +2,8 @@ package com.productshop.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
 import com.productshop.core.Messenger;
 import com.productshop.core.RedirectManager;
 import com.productshop.models.Order;
@@ -9,6 +11,7 @@ import com.productshop.models.User;
 import com.productshop.security.AuthenticationManager;
 import com.productshop.security.Encryption;
 import com.productshop.security.SecurityException;
+import com.productshop.services.CatalogService;
 import com.productshop.services.OrderService;
 import com.productshop.services.ServiceException;
 import com.productshop.services.UserService;
@@ -22,8 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/account")
 public class UserController extends BaseController {
-	
+
+	private final UserService userService = new UserService();
+	private final OrderService orderService = new OrderService();
+
 	public void actionIndex() throws ControllerException {
+
+		//todo replace with prepareModelForAccountPage method
+
 		AuthenticationManager am = getContext().getAuthenticationManager();
 		
 		User user = null;
@@ -56,73 +65,61 @@ public class UserController extends BaseController {
 	}
 
 	@GetMapping("/login")
-	public String renderLoginPage(Model model) {
+	public String renderLoginPage(Model model, AuthenticationManager authManager) throws ServiceException {
+		model.addAttribute("authManager", authManager);
+		if(authManager.isAuthenticated()) {
+			User user = userService.getUserByID(authManager.getUserID());
+			prepareModelForAccountPage(model, user, orderService.getOrdersByUserID(user.getId()));
+			return MAIN_LAYOUT_PATH;
+		}
 		model.addAttribute("page", "user/login");
 		return MAIN_LAYOUT_PATH;
 	}
 
-	public void actionLogin() throws ControllerException {
-		AuthenticationManager authManager = getContext().getAuthenticationManager();
-		Messenger messages = getContext().getMessenger();
-		
-		if(authManager.isAuthenticated()) {
-			String url = getContext().getRequest().getContextPath() + "/account";
-			RedirectManager rm = getContext().getRedirectManager();
-			
-			try {
-				rm.goTo(url);
-				return;
-			} catch (IOException e) {
-				throw new ControllerException(e.getMessage(), e);
-			}
+	@PostMapping("/login")
+	public String processLoginRequest(Model model,
+							AuthenticationManager authManager,
+							Messenger messenger,
+							@RequestParam(required = false) String email,
+							@RequestParam(required = false) String password
+							) throws ControllerException, ServiceException {
+		model.addAttribute("authManager", authManager);
+		model.addAttribute("messages", messenger);
+
+		if(email.isBlank() || password.isBlank()) {
+			messenger.addErrorMessage("Ошибка. Все поля обязательны для заполнения.");
+			model.addAttribute("email", email);
+			model.addAttribute("page", "user/login");
+			return MAIN_LAYOUT_PATH;
 		}
-		
-		if(getContext().isMethodPOST()) {
-			String email = getContext().getRequestParameter("email");
-			String password = getContext().getRequestParameter("password");
-			
-			if(email.isEmpty() || password.isEmpty()) {
-				messages.addErrorMessage("Ошибка. Все поля обязательны для заполнения.");
-			}
-			
-			if(messages.getErrorMessages().size() > 0) {
-				getContext().setAttribute("email", email);
-				return;
-			}
-			
-			boolean result = false;
-			
-			try {
-				String hashPassword = Encryption.hash(password);
-				
-				UserService service = new UserService();
-				
-				result = service.authUser(email, hashPassword, authManager);
-			} catch (ServiceException | SecurityException e) {
-				throw new ControllerException(e.getMessage(), e);
-			}
-			
-			if(result) {
-				String url = getContext().getRequest().getContextPath() + "/account";
-				RedirectManager rm = getContext().getRedirectManager();
-				try {
-					rm.goTo(url);
-					return;
-				} catch (IOException e) {
-					throw new ControllerException(e.getMessage(), e);
-				}
-			} else {
-				messages.addErrorMessage("Ошибка. Неверный логин или пароль.");
-			}
+
+		boolean result;
+
+		try {
+			String hashPassword = Encryption.hash(password);
+			result = userService.authUser(email, hashPassword, authManager);
+		} catch (ServiceException | SecurityException e) {
+			throw new ControllerException(e.getMessage(), e);
 		}
+
+		if(!result) {
+			messenger.addErrorMessage("Ошибка. Неверный логин или пароль.");
+			model.addAttribute("email", email);
+			model.addAttribute("page", "user/login");
+			return MAIN_LAYOUT_PATH;
+		} else {
+			User user = userService.getUserByID(authManager.getUserID());
+			prepareModelForAccountPage(model, user, orderService.getOrdersByUserID(user.getId()));
+		}
+		return MAIN_LAYOUT_PATH;
 	}
 
 	@GetMapping("/registration")
 	public String renderRegistrationPage(Model model, AuthenticationManager authManager) throws ServiceException {
+		model.addAttribute("authManager", authManager);
 		if(authManager.isAuthenticated()) {
-			User user = new UserService().getUserByID(authManager.getUserID());
-			model.addAttribute("user", user);
-			model.addAttribute("page", "user/account");
+			User user = userService.getUserByID(authManager.getUserID());
+			prepareModelForAccountPage(model, user, orderService.getOrdersByUserID(user.getId()));
 			return MAIN_LAYOUT_PATH;
 		}
 		model.addAttribute("page", "user/registration");
@@ -140,11 +137,11 @@ public class UserController extends BaseController {
 								   @RequestParam(required = false) String password,
 								   @RequestParam(required = false, value = "confirm-password") String confirmedPassword
 								   ) throws ControllerException, ServiceException {
+		model.addAttribute("authManager", authManager);
 		model.addAttribute("messages", messenger);
 		if(authManager.isAuthenticated()) {
-			User user = new UserService().getUserByID(authManager.getUserID());
-			model.addAttribute("user", user);
-			model.addAttribute("page", "user/account");
+			User user = userService.getUserByID(authManager.getUserID());
+			prepareModelForAccountPage(model, user, orderService.getOrdersByUserID(user.getId()));
 			return MAIN_LAYOUT_PATH;
 		}
 		User user = new User(name, surname, email, phone, password);
@@ -163,22 +160,19 @@ public class UserController extends BaseController {
 			return MAIN_LAYOUT_PATH;
 		}
 
-		long result = 0;
+		long result;
 
 		try {
 			String hashPassword = Encryption.hash(password);
 			user.setPassword(hashPassword);
-
-			UserService service = new UserService();
-
-			result = service.createNewUser(user, authManager);
+			result = userService.createNewUser(user, authManager);
 		} catch (ServiceException | SecurityException e) {
 			throw new ControllerException(e.getMessage(), e);
 		}
 
 		if(result > 0) {
-			model.addAttribute("user", new UserService().getUserByID(result));
-			model.addAttribute("page", "user/account");
+			User persistedUser = userService.getUserByID(result);
+			prepareModelForAccountPage(model, persistedUser, orderService.getOrdersByUserID(persistedUser.getId()));
 			return MAIN_LAYOUT_PATH;
 		} else {
 			messenger.addErrorMessage("Ошибка. Регистрация не была завершена.");
@@ -186,19 +180,21 @@ public class UserController extends BaseController {
 			return MAIN_LAYOUT_PATH;
 		}
 	}
-	
-	public void actionOut() throws ControllerException {
-		AuthenticationManager am = getContext().getAuthenticationManager();
-		am.destroyAuthentication();
-		
-		String url = getContext().getRequest().getContextPath();
-		RedirectManager rm = getContext().getRedirectManager();
+
+	@GetMapping("/out")
+	public String logoutUser(Model model, AuthenticationManager authManager) throws ControllerException {
+		model.addAttribute("authManager", authManager);
+		if(authManager.isAuthenticated()) {
+			authManager.destroyAuthentication();
+		}
 		try {
-			rm.goTo(url);
-			return;
-		} catch (IOException e) {
+			model.addAttribute("lastItems", new CatalogService().getLastItems(6));
+			model.addAttribute("discountItems", new CatalogService().getLastDiscountItems(6));
+		} catch (ServiceException e) {
 			throw new ControllerException(e.getMessage(), e);
 		}
+		model.addAttribute("page", "index");
+		return MAIN_LAYOUT_PATH;
 	}
 	
 	public void actionEdituser() throws ControllerException {
@@ -267,5 +263,11 @@ public class UserController extends BaseController {
 				messages.addSuccessMessage("Данные успешно изменены");
 			}
 		}
+	}
+
+	private void prepareModelForAccountPage(Model model, User user, List<Order> orders) {
+		model.addAttribute("user", user);
+		model.addAttribute("orders", orders);
+		model.addAttribute("page", "user/account");
 	}
 }

@@ -4,6 +4,7 @@ import java.sql.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import com.productshop.models.Order;
+import com.productshop.models.OrderStatus;
 import com.productshop.models.User;
 import com.productshop.services.ServiceException;
 import com.productshop.services.UserService;
@@ -30,7 +31,7 @@ public class OrderDao extends BaseDao {
 	}
 
 	public ArrayList<Order> getAllOrders() throws DaoException {
-		String sql = "SELECT id,user_id,order_status_id,order_date FROM orders";
+		String sql = "SELECT id,user_id,order_status,creating_date FROM orders";
 		ArrayList<Order> orders = new ArrayList<>();
 		try (Connection connection = getJDBCConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -45,8 +46,8 @@ public class OrderDao extends BaseDao {
 				}
 				Order order = new Order(user);
 				order.setId(resultSet.getInt("id"));
-				order.setOrderStatusID(resultSet.getInt("order_status_id"));
-				order.setOrderDate(resultSet.getDate("order_date"));
+				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
+				order.setCreatingDate(resultSet.getDate("creating_date"));
 				orders.add(order);
 			}
 		} catch (SQLException e) {
@@ -56,7 +57,7 @@ public class OrderDao extends BaseDao {
 	}
 	
 	public ArrayList<Order> getOrdersByUserID(int userID) throws DaoException {
-		String sql = "SELECT id,user_id,order_status_id,order_date FROM orders WHERE user_id=?";
+		String sql = "SELECT id,user_id,order_status,creating_date FROM orders WHERE user_id=?";
 		ArrayList<Order> orders = new ArrayList<>();
 		try (Connection connection = getJDBCConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -73,8 +74,8 @@ public class OrderDao extends BaseDao {
 				}
 				Order order = new Order(user);
 				order.setId(resultSet.getInt("id"));
-				order.setOrderStatusID(resultSet.getInt("order_status_id"));
-				order.setOrderDate(resultSet.getDate("order_date"));
+				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
+				order.setCreatingDate(resultSet.getDate("creating_date"));
 				orders.add(order);
 			}
 		} catch (SQLException e) {
@@ -85,7 +86,7 @@ public class OrderDao extends BaseDao {
 	
 	public long changeStatus(int orderID, int newStatus) throws DaoException {
 		int result;
-		String sql = "UPDATE orders SET order_status_id=? WHERE id=?";
+		String sql = "UPDATE orders SET order_status=? WHERE id=?";
 		try (Connection connection = getJDBCConnection();
 			 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			statement.setInt(1, newStatus);

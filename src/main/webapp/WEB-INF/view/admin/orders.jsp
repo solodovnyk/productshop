@@ -15,14 +15,14 @@
 		      <form action="<c:url value="/admin/changestatus" />" method="post">
 		      <input type="hidden" name="order-id" value="${order.id}">
               <td>${order.id}</td>
-              <td>${order.orderDate}</td>
+              <td>${order.creatingDate}</td>
               <td><a href="customer-info.html">${order.user.name}</a></td>
               <td>
-              	<c:if test="${order.orderStatusID == 3}">
+              	<c:if test="${order.orderStatus == 'DONE'}">
 			      <span>выполнен</span>
 				</c:if>
-              	<c:if test="${order.orderStatusID != 3}">
-			      <select class="form-control admin-orders order-status-select" data-ststus="${order.orderStatusID}" name="status">
+              	<c:if test="${order.orderStatus != 'DONE'}">
+			      <select class="form-control admin-orders order-status-select" data-ststus="${order.orderStatus}" name="status">
                     <option value="1">новый</option>
                     <option value="2">в обработке</option>
                     <option value="3">выполнен</option>

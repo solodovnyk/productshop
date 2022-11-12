@@ -1,12 +1,10 @@
 package com.productshop.controllers;
 
-import java.util.ArrayList;
-
 import com.productshop.core.*;
 import com.productshop.models.*;
+import com.productshop.security.AuthenticationManager;
 import com.productshop.services.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,24 +18,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class FirstController extends BaseController {
 
 	@GetMapping("/")
-	public String renderIndexPage(Model model) throws ControllerException {
-		CatalogService service = new CatalogService();
-		ArrayList<Item> lastItems;
-		ArrayList<Item> discountItems;
+	public String renderIndexPage(Model model, AuthenticationManager authManager) throws ControllerException {
+		model.addAttribute("authManager", authManager);
 		try {
-			lastItems = service.getLastItems(6);
-			discountItems = service.getLastDiscountItems(6);
+			model.addAttribute("lastItems", new CatalogService().getLastItems(6));
+			model.addAttribute("discountItems", new CatalogService().getLastDiscountItems(6));
 		} catch (ServiceException e) {
 			throw new ControllerException(e.getMessage(), e);
 		}
-		model.addAttribute("lastItems", lastItems);
-		model.addAttribute("discountItems", discountItems);
 		model.addAttribute("page", "index");
 		return MAIN_LAYOUT_PATH;
 	}
 
 	@GetMapping("/messages")
-	public String renderMessagesPage(Model model) {
+	public String renderMessagesPage(Model model, AuthenticationManager authManager) {
+		model.addAttribute("authManager", authManager);
 		model.addAttribute("page", "messages");
 		return MAIN_LAYOUT_PATH;
 	}
@@ -45,9 +40,11 @@ public class FirstController extends BaseController {
 	@PostMapping("/messages")
 	public String processMessage(Model model,
 								 Messenger messenger,
+								 AuthenticationManager authManager,
 								 @RequestParam String name,
 								 @RequestParam String email,
 								 @RequestParam String question) {
+		model.addAttribute("authManager", authManager);
 		model.addAttribute("messages", messenger);
 		model.addAttribute("page", "messages");
 		Message message = new Message(name, email, question);
@@ -73,7 +70,8 @@ public class FirstController extends BaseController {
 	}
 
 	@GetMapping("/delivery")
-	public String renderDeliveryPage(Model model) {
+	public String renderDeliveryPage(Model model, AuthenticationManager authManager) {
+		model.addAttribute("authManager", authManager);
 		model.addAttribute("page", "delivery");
 		return MAIN_LAYOUT_PATH;
 	}

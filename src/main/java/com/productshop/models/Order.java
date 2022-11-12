@@ -8,8 +8,8 @@ public class Order {
 
 	private int id;
 	private User user;
-	private int orderStatusID;
-	private Date orderDate;
+	private OrderStatus orderStatus;
+	private Date creatingDate;
 	private ArrayList<ProductPosition> productPositions = new ArrayList<>();
 
 	public Order(User user) {
@@ -32,20 +32,20 @@ public class Order {
 		this.user = user;
 	}
 
-	public int getOrderStatusID() {
-		return orderStatusID;
+	public OrderStatus getOrderStatus() {
+		return orderStatus;
 	}
 
-	public void setOrderStatusID(int orderStatusID) {
-		this.orderStatusID = orderStatusID;
+	public void setOrderStatus(OrderStatus orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 
-	public Date getOrderDate() {
-		return orderDate;
+	public Date getCreatingDate() {
+		return creatingDate;
 	}
 
-	public void setOrderDate(Date orderDate) {
-		this.orderDate = orderDate;
+	public void setCreatingDate(Date creatingDate) {
+		this.creatingDate = creatingDate;
 	}
 
 	public ArrayList<ProductPosition> getProductPositions() {
