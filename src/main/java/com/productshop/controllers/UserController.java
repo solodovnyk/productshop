@@ -103,15 +103,15 @@ public class UserController extends BaseController {
 
 	@PostMapping("/registration")
 	public String processRegistrationRequest(Model model,
-								   AuthenticationManager authManager,
-								   Messenger messenger,
-								   @RequestParam(required = false) String name,
-								   @RequestParam(required = false) String surname,
-								   @RequestParam(required = false) String email,
-								   @RequestParam(required = false) String phone,
-								   @RequestParam(required = false) String password,
-								   @RequestParam(required = false, value = "confirm-password") String confirmedPassword
-								   ) throws ControllerException, ServiceException {
+											 AuthenticationManager authManager,
+											 Messenger messenger,
+											 @RequestParam(required = false) String name,
+											 @RequestParam(required = false) String surname,
+											 @RequestParam(required = false) String email,
+											 @RequestParam(required = false) String phone,
+											 @RequestParam(required = false) String password,
+											 @RequestParam(required = false, value = "confirm-password") String confirmedPassword
+	) throws ControllerException, ServiceException {
 		model.addAttribute("authManager", authManager);
 		model.addAttribute("messages", messenger);
 		if(authManager.isAuthenticated()) {
@@ -171,73 +171,66 @@ public class UserController extends BaseController {
 		model.addAttribute("page", "index");
 		return MAIN_LAYOUT_PATH;
 	}
-	
-	public void actionEdituser() throws ControllerException {
-		if(getContext().isMethodPOST()) {
-			AuthenticationManager am = getContext().getAuthenticationManager();
+
+	@PostMapping("/edit")
+	public String processUpdateRequest(Model model,
+									   AuthenticationManager authManager,
+									   Messenger messenger,
+									   @RequestParam(required = false) String name,
+									   @RequestParam(required = false) String surname,
+									   @RequestParam(required = false) String phone,
+									   @RequestParam(required = false) String password,
+									   @RequestParam(required = false, value = "confirm-password") String confirmedPassword
+	) throws ServiceException, SecurityException {
+
+		if(authManager.isAuthenticated()) {
+			model.addAttribute("authManager", authManager);
+			model.addAttribute("messages", messenger);
+			model.addAttribute("page", "user/account");
+
+			User user = userService.getUserByID(authManager.getUserID());
+			prepareModelForAccountPage(model, user, orderService.getOrdersByUserID(user.getId()));
+
 			boolean passwordChange = false;
-			
-			String name = getContext().getRequestParameter("name");
-			String surname = getContext().getRequestParameter("surname");
-			String phone = getContext().getRequestParameter("phone");
-			
-			Messenger messages = getContext().getMessenger();
-			
+
 			if(name.isEmpty() || surname.isEmpty() || phone.isEmpty()) {
-				messages.addErrorMessage("Ошибка. Поля \"имя\", \"Фамилия\", и \"телефон\" должны быть заполнены.");
+				messenger.addErrorMessage("Ошибка. Поля \"имя\", \"Фамилия\", и \"телефон\" должны быть заполнены.");
+				return MAIN_LAYOUT_PATH;
 			}
-			
-			String newPassword = getContext().getRequestParameter("new-password");
-			String confirmNewPassword = getContext().getRequestParameter("confirm-new-password");
-			
-			if(!newPassword.isEmpty() || !confirmNewPassword.isEmpty()) {
+
+			if(!password.isEmpty() || !confirmedPassword.isEmpty()) {
 				passwordChange = true;
-				
-				if(newPassword.isEmpty() || confirmNewPassword.isEmpty()) {
-					messages.addErrorMessage("Ошибка. При изменении пароля поля \"новый пароль\", и \"повторите новый пароль\" должны быть заполнены.");
+
+				if(password.isEmpty() || confirmedPassword.isEmpty()) {
+					messenger.addErrorMessage("Ошибка. При изменении пароля поля \"новый пароль\", и \"повторите новый пароль\" должны быть заполнены.");
+					return MAIN_LAYOUT_PATH;
 				}
-				
-				if(!newPassword.equals(confirmNewPassword)) {
-					messages.addErrorMessage("Ошибка. Пароли не совпадают.");
+
+				if(!password.equals(confirmedPassword)) {
+					messenger.addErrorMessage("Ошибка. Пароли не совпадают.");
+					return MAIN_LAYOUT_PATH;
 				}
 			}
-			
-			if(messages.getErrorMessages().size() > 0) {
-				return;
-			}
-			
-			UserService service = new UserService();
-			User user = null;
-			
-			try {
-				user = service.getUserByID(am.getUserID());
-			} catch (ServiceException e) {
-				throw new ControllerException(e.getMessage(), e);
-			}
-			
+
 			user.setName(name);
 			user.setSurname(surname);
 			user.setPhone(phone);
-			
-			int result = 0;
-			
-			try {
-				result = service.editUser(user);
-				
-				if(result > 0 && passwordChange) {
-					
-					String hashPassword = Encryption.hash(newPassword);
-					result = service.changePassword(user.getId(), hashPassword);
-				}
-				
-			} catch (ServiceException | SecurityException e) {
-				throw new ControllerException(e.getMessage(), e);
+
+			int result = userService.editUser(user);
+			if(result > 0 && passwordChange) {
+				String hashPassword = Encryption.hash(password);
+				result = userService.changePassword(user.getId(), hashPassword);
 			}
-			
+
 			if(result > 0) {
-				messages.addSuccessMessage("Данные успешно изменены");
+				messenger.addSuccessMessage("Данные успешно изменены");
+			} else {
+				messenger.addErrorMessage("Неизвестная ошибка. Данные не изменены");
 			}
+			return MAIN_LAYOUT_PATH;
 		}
+		model.addAttribute("page", "user/login");
+		return MAIN_LAYOUT_PATH;
 	}
 
 	private void prepareModelForAccountPage(Model model, User user, List<Order> orders) {

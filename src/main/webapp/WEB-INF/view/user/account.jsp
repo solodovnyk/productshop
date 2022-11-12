@@ -48,7 +48,7 @@
               </table>
             </div>
             <div role="tabpanel" class="tab-pane fade" id="personal-data">
-              <form class="account-form" action="<c:url value="/account/edituser" />" method="post">
+              <form class="account-form" action="<c:url value="/account/edit" />" method="post">
                 <h3>Изменение персональной информации</h3>
                 <div class="form-section">
                   <input type="text" value="${user.name}" name="name" placeholder="Имя">
@@ -61,10 +61,10 @@
                 </div>
                 <h3>Изменение пароля</h3>
                 <div class="form-section">
-                  <input type="text" value="" name="new-password" placeholder="Новый пароль">
+                  <input type="text" value="" name="password" placeholder="Новый пароль">
                 </div>
                 <div class="form-section">
-                  <input type="text" value="" name="confirm-new-password" placeholder="Повторите новый пароль">
+                  <input type="text" value="" name="confirm-password" placeholder="Повторите новый пароль">
                 </div>
                 <input type="submit"  value="Изменить">
               </form>
