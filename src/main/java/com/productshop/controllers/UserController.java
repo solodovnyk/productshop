@@ -1,11 +1,8 @@
 package com.productshop.controllers;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.productshop.core.Messenger;
-import com.productshop.core.RedirectManager;
 import com.productshop.models.Order;
 import com.productshop.models.User;
 import com.productshop.security.AuthenticationManager;
@@ -29,39 +26,17 @@ public class UserController extends BaseController {
 	private final UserService userService = new UserService();
 	private final OrderService orderService = new OrderService();
 
-	public void actionIndex() throws ControllerException {
-
-		//todo replace with prepareModelForAccountPage method
-
-		AuthenticationManager am = getContext().getAuthenticationManager();
-		
-		User user = null;
-		ArrayList<Order> orders = null;
-		
-		try {
-			UserService userService = new UserService();
-			OrderService orderService = new OrderService();
-			
-			user = userService.getUserByID(am.getUserID());
-			getContext().setAttribute("user", user);
-			
-			if(user == null) {
-				String url = getContext().getRequest().getContextPath() + "/account/login";
-				RedirectManager rm = getContext().getRedirectManager();
-				try {
-					rm.goTo(url);
-					return;
-				} catch (IOException e) {
-					throw new ControllerException(e.getMessage(), e);
-				}
-			}
-			
-			orders = orderService.getOrdersByUserID(user.getId());
-			getContext().setAttribute("orders", orders);
-			
-		} catch (ServiceException e) {
-			throw new ControllerException(e.getMessage(), e);
+	@GetMapping
+	public String prepareModelForAccountPage(Model model, AuthenticationManager authManager) throws ServiceException {
+		model.addAttribute("authManager", authManager);
+		if(authManager.isAuthenticated()) {
+			User user = userService.getUserByID(authManager.getUserID());
+			List<Order> orders = orderService.getOrdersByUserID(user.getId());
+			prepareModelForAccountPage(model, user, orders);
+			return MAIN_LAYOUT_PATH;
 		}
+		model.addAttribute("page", "user/login");
+		return MAIN_LAYOUT_PATH;
 	}
 
 	@GetMapping("/login")
@@ -78,11 +53,11 @@ public class UserController extends BaseController {
 
 	@PostMapping("/login")
 	public String processLoginRequest(Model model,
-							AuthenticationManager authManager,
-							Messenger messenger,
-							@RequestParam(required = false) String email,
-							@RequestParam(required = false) String password
-							) throws ControllerException, ServiceException {
+									  AuthenticationManager authManager,
+									  Messenger messenger,
+									  @RequestParam(required = false) String email,
+									  @RequestParam(required = false) String password
+	) throws ControllerException, ServiceException {
 		model.addAttribute("authManager", authManager);
 		model.addAttribute("messages", messenger);
 
